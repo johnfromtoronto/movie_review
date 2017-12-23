@@ -9,6 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.StringTrimmerEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +24,7 @@ import com.springmvc.entity.Genre;
 import com.springmvc.entity.Movie;
 import com.springmvc.entity.Review;
 import com.springmvc.entity.WrapperReview;
+import com.springmvc.service.MovieService;
 
 
 
@@ -30,8 +32,11 @@ import com.springmvc.entity.WrapperReview;
 @Controller
 @RequestMapping("/movie")
 public class MovieController {
+	
 //		@Autowired
 //		private MovieDAO movieDAO;
+		@Autowired
+		private MovieService movieService;
 	
 		@InitBinder//init binder intercepts all requests and changes the request using - webdatabinder binds an editor to a datatype
 		public void initBinder(WebDataBinder databinder) {
@@ -48,33 +53,40 @@ public class MovieController {
 		// gets the list of movies from db, then sends it to list-movies
 		@RequestMapping("/list")
 		public String list(Model theModel) {
-			System.out.println("BEGIN: public String list(Model theModel) {");
-			SessionFactory factory = new Configuration()
-					.configure("hibernate.cfg.xml")//provide the config file
-					.addAnnotatedClass(Movie.class)//provide the class with the annotations on it
-					.addAnnotatedClass(Genre.class)
-					.addAnnotatedClass(Review.class)
-					.buildSessionFactory();
-			Session session = factory.getCurrentSession();
-			try {
-				session.beginTransaction();
-				//get movies from db
-				Query<Movie> query = session.createQuery("from Movie");
-				List<Movie> movies = query.getResultList();
-				for(Movie movie: movies) {
-					System.out.println(movie.getGenres());//lazy load all the genres
-				}
-				Movie selectedMovie = session.get(Movie.class, 1);
-				theModel.addAttribute("movie",selectedMovie);
-				
-				//List<Movie> movies = movieDAO.getMovies();
-				
-				theModel.addAttribute("movies",movies);
-				session.getTransaction().commit();
-			}finally{
-				session.close();//
-				factory.close();
-			}
+			System.out.println("BEGINn: public String list(Model theModel) {");
+//			SessionFactory factory = new Configuration()
+//					.configure("hibernate.cfg.xml")//provide the config file
+//					.addAnnotatedClass(Movie.class)//provide the class with the annotations on it
+//					.addAnnotatedClass(Genre.class)
+//					.addAnnotatedClass(Review.class)
+//					.buildSessionFactory();
+//			Session session = factory.getCurrentSession();
+//			try {
+//				session.beginTransaction();
+//				//get movies from db
+////				Query<Movie> query = session.createQuery("from Movie");
+////				List<Movie> movies = query.getResultList();
+////				for(Movie movie: movies) {
+////					System.out.println(movie.getGenres());//lazy load all the genres
+////				}
+////				Movie selectedMovie = session.get(Movie.class, 1);
+////				theModel.addAttribute("movie",selectedMovie);
+//				
+//				List<Movie> movies = movieDAO.getMovies();
+//				
+//				theModel.addAttribute("movies",movies);
+//				session.getTransaction().commit();
+//			}finally{
+//				session.close();//
+//				factory.close();
+//			}
+			
+			
+			//List<Movie> movies = movieDAO.getMovies();
+			List<Movie> movies = movieService.getMovies();
+			
+			theModel.addAttribute("movies",movies);
+			
 			System.out.println("END: public String list(Model theModel) {");
 			return "list-movies";
 		}
