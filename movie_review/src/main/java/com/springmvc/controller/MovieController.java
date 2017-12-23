@@ -1,6 +1,5 @@
 package com.springmvc.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -15,8 +14,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -25,9 +26,6 @@ import com.springmvc.entity.Movie;
 import com.springmvc.entity.Review;
 import com.springmvc.entity.WrapperReview;
 import com.springmvc.service.MovieService;
-
-
-
 
 @Controller
 @RequestMapping("/movie")
@@ -44,7 +42,6 @@ public class MovieController {
 			
 			databinder.registerCustomEditor(String.class, ste);
 		}
-	
 		@RequestMapping("/home")
 		public String home() {
 			return "home-page";
@@ -92,7 +89,8 @@ public class MovieController {
 		}
 		
 		// addMovie() - method that helps display a form for adding movies
-		@RequestMapping("/addMovie")
+		//@RequestMapping("/addMovie")
+		@GetMapping("/addMovie")
 		public String addMovie(Model theModel) {
 			System.out.println("BEGIN: public addMovie(Model theModel) {");
 			Movie theMovie = new Movie();
@@ -149,24 +147,24 @@ public class MovieController {
 		@RequestMapping("/deleteMovie")
 		public String deleteMovie(@RequestParam("movieId")int movieId) {
 			System.out.println("BEGIN: public String deleteMovie(@RequestParam");
-			SessionFactory factory = new Configuration()
-					.configure("hibernate.cfg.xml")//provide the config file
-					.addAnnotatedClass(Movie.class)//provide the class with the annotations on it
-					.addAnnotatedClass(Genre.class)//provide the class with the annotations on it
-					.addAnnotatedClass(Review.class)//provide the class with the annotations on it
-					.buildSessionFactory();
-			Session session = factory.getCurrentSession();
-			
-			try {
-				session.beginTransaction();
-				Movie theMovie = session.get(Movie.class, movieId);
-				session.delete(theMovie);
-				session.getTransaction().commit();
-			}finally {
-				session.close();
-				factory.close();
-			}
-			
+//			SessionFactory factory = new Configuration()
+//					.configure("hibernate.cfg.xml")//provide the config file
+//					.addAnnotatedClass(Movie.class)//provide the class with the annotations on it
+//					.addAnnotatedClass(Genre.class)//provide the class with the annotations on it
+//					.addAnnotatedClass(Review.class)//provide the class with the annotations on it
+//					.buildSessionFactory();
+//			Session session = factory.getCurrentSession();
+//			
+//			try {
+//				session.beginTransaction();
+//				Movie theMovie = session.get(Movie.class, movieId);
+//				session.delete(theMovie);
+//				session.getTransaction().commit();
+//			}finally {
+//				session.close();
+//				factory.close();
+//			}
+			movieService.deleteMovieById(movieId);
 			System.out.println("END: public String deleteMovie(@RequestParam");
 			return "redirect:/movie/list";
 		}
@@ -179,53 +177,8 @@ public class MovieController {
 				System.out.println("END add-movie-form : String processMovieForm(@Valid @ModelAttribute");
 				return "add-movie-form";
 			}
-			SessionFactory factory = new Configuration()
-					.configure("hibernate.cfg.xml")//provide the config file
-					.addAnnotatedClass(Movie.class)//provide the class with the annotations on it
-					.addAnnotatedClass(Genre.class)//provide the class with the annotations on it
-					.addAnnotatedClass(Review.class)//provide the class with the annotations on it
-					.buildSessionFactory();
-			Session session = factory.getCurrentSession();
-
-			try {
-				session.beginTransaction();
-				System.out.println("LOG: SAVING THE MOVIE BY USER: "+theMovieByUser);
-				System.out.println("LOG: SAVING THE MOVIE BY USER:(GENRES) "+theMovieByUser.getGenres());
-				//get the genres that user selected, 
-				List<Genre> genres = theMovieByUser.getGenres();//used for looping and checking what genres the movie has
-				List<Genre> setGenre = new ArrayList<Genre>();//used as a placeholder List to store references to genres from db
-				
-				Genre horror = session.get(Genre.class, 1);//Horror reference from db
-				Genre comedy = session.get(Genre.class, 2);//Comedy reference from db
-				Genre action = session.get(Genre.class, 3);//Action reference from db
-				for(Genre genre : genres) {
-					String movieGenre=genre.getMovieGenre();
-					System.out.println("LOG: processMovieForm: genre.getMovieGenre(): "+genre.getMovieGenre());
-					switch(movieGenre) {
-					case "Horror":
-						setGenre.add(horror);
-						break;
-					case "Comedy":
-						setGenre.add(comedy);
-						break;
-					case "Action":
-						setGenre.add(action);
-						break;
-					default:
-						System.out.println("Default break:.......................");
-						break;
-					}
-				}
-				theMovieByUser.setGenres(setGenre);//set the genre without add new genres
-				System.out.println("LOG: processMovieForm: saveOrUpdate(): theMovieByUser.getId(): "+theMovieByUser.getId());
-				theMovieByUser.getGenres();//lazy load
-				session.saveOrUpdate(theMovieByUser);//SAVE Or UPDATE
-				//session.persist(theMovieByUser);
-				session.getTransaction().commit();
-			}finally {
-				session.close();
-				factory.close();
-			}
+			//using the service which delegates the task to dao to save the movie
+			movieService.saveMovie(theMovieByUser);
 			System.out.println("END: String processMovieForm(@Valid @ModelAttribute");
 			return "movie-confirmation";
 		}
@@ -323,7 +276,7 @@ public class MovieController {
 			//return "redirect:/movie/listReviews";
 		}
 
-		@RequestMapping("/processReviewForm")
+		@PostMapping("/processReviewForm")
 		public String processReviewForm(@ModelAttribute("wrapperReview") WrapperReview wrapperReview,Model theModel) {
 			System.out.println("BEGIN: processReviewForm()");
 			System.out.println("++++++++WrapperReview+++++: "+wrapperReview);

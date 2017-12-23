@@ -3,7 +3,10 @@
 <body>
 	<h2>Movies available</h2>
 	<hr />
-	<a href="addMovie">Add new movie</a>
+	<!-- <a href="addMovie">Add new movie</a> -->
+	<input type="button" value="add new movie" 
+	onclick="window.location.href='addMovie'; return false;" />
+	
 	<hr />
 	<c:forEach var="tempMovie" items="${movies}">
 		<c:url var="updateMovieLink" value="/movie/updateMovie">

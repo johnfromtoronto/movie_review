@@ -62,6 +62,11 @@
 		<br />
 		<input type="submit" value="Submit movie!" />
 	</form:form>
-	
+	<p>
+		<a href="${pageContext.request.contextPath}/movie/list">Back to movies list</a>
+	</p>
+	<p>
+		<a href="${pageContext.request.contextPath}/movie/home">Back to homepage</a>
+	</p>
 </body>
 </html>
