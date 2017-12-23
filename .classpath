@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="movie_review/src/main/java"/>
+	<classpathentry kind="lib" path="movie_review/target/movie_review/WEB-INF/lib/javax.servlet-api-3.1.0.jar"/>
+	<classpathentry kind="output" path="movie_review/target/classes"/>
+</classpath>
