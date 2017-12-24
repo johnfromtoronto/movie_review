@@ -64,7 +64,7 @@ public class Movie {
 			System.out.println("create new ArrayList");
 			reviews = new ArrayList<Review>();
 		}
-		System.out.println("reviews.add(review);");
+		System.out.println("reviews.add(review); : "+review);
 		reviews.add(review);
 		System.out.println("review.setMovie(this);");
 		review.setMovie(this);

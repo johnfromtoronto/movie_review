@@ -93,7 +93,7 @@ public class MovieDAOImpl implements MovieDAO {
 		System.out.println("saving the movie");
 		session.saveOrUpdate(theMovieByUser);//SAVE Or UPDATE
 		
-		//session.close();
+		System.out.println("TheMovieReviews: "+theMovieByUser.getReviews());
 		System.out.println("END: DAO: public void saveMovie(Movie theMovieByUser)");
 	}
 
@@ -113,9 +113,15 @@ public class MovieDAOImpl implements MovieDAO {
 //		}
 //		Movie theMovie = session.get(Movie.class, movieId);
 //		session.delete(theMovie);
-		Query query = session.createQuery("delete from Movie where id=:movieId");
+		//delete all Reviews referencing the movie, then delete the movie
+		Query query = session.createQuery("delete from Review where movie_id=:movieId");
 		query.setParameter("movieId", movieId);
 		query.executeUpdate();
+		query = session.createQuery("delete from Movie where id=:movieId");
+		query.setParameter("movieId", movieId);//Named parameter [movieId] not set
+		query.executeUpdate();
+
+
 		
 		//session.close();
 		System.out.println("END: DAO: public void deleteMovieById(int movieId)");
@@ -127,7 +133,8 @@ public class MovieDAOImpl implements MovieDAO {
 		Session session = sessionFactory.getCurrentSession();
 		
 		Movie theMovie = session.get(Movie.class, movieId);
-		System.out.println("Movie: "+theMovie);
+		System.out.println("lazy init genres: "+theMovie.getGenres());
+		System.out.println("lazy init reviews: "+theMovie.getReviews());
 		//theMovie.getGenres();//lazy load these guys
 		//System.out.println(".getGenres: "+theMovie.getGenres());
 		System.out.println("END: DAO: public Movie getMovieById(int movieId) {");

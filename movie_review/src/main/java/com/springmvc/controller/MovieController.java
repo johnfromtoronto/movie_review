@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.springmvc.entity.Genre;
 import com.springmvc.entity.Movie;
 import com.springmvc.entity.Review;
-import com.springmvc.entity.WrapperReview;
+import com.springmvc.entity.WrapperMovieReview;
 import com.springmvc.service.MovieService;
 
 @Controller
@@ -175,6 +175,7 @@ public class MovieController {
 		@RequestMapping("/processMovieForm")
 		public String processMovieForm(@Valid @ModelAttribute("movie") Movie theMovieByUser, BindingResult br) {
 			System.out.println("BEGIN: String processMovieForm(@Valid @ModelAttribute");
+			System.out.println("theMovieByUser: "+theMovieByUser);
 			if(br.hasErrors()) {
 				System.out.println("END add-movie-form : String processMovieForm(@Valid @ModelAttribute");
 				return "add-movie-form";
@@ -188,154 +189,42 @@ public class MovieController {
 		@RequestMapping("/viewReviews")
 		public String viewReviews(@RequestParam("movieId")int movieId, Model theModel) {
 			System.out.println("BEGIN: viewReviews()");
-//			SessionFactory factory = new Configuration()
-//					.configure("hibernate.cfg.xml")
-//					.addAnnotatedClass(Movie.class)
-//					.addAnnotatedClass(Genre.class)
-//					.addAnnotatedClass(Review.class)
-//					.buildSessionFactory();
-//			Session session = factory.getCurrentSession();
-//			try {
-//				session.beginTransaction();
-				//get the reviews for the given movie
-				//Query<Review> query = session.createQuery("from Review where movie_id="+movieId);
-				//List<Review> reviews = query.getResultList();
+			Movie theMovie = movieService.getMovieReviewsById(movieId);
+			theModel.addAttribute("movie",theMovie);
 				
-				//theModel.addAttribute("reviews",reviews);
-				
-				//stuff
-//				System.out.println("error: "+movieId);
-				//Movie theMovie = session.get(Movie.class, movieId);
-				//System.out.println("error: "+movieId);
-				//System.out.println("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHH : theMovie: "+theMovie);
-//				//System.out.println("the movie reviews: "+theMovie.getReviews());//lazy get
-//				Query<Movie> query = session.createQuery("select i from Movie i "
-//						+ "JOIN FETCH i.reviews "
-//						+ "where i.id=:theMovieId",
-//						Movie.class);
-//				query.setParameter("theMovieId", movieId);
-//				Movie theMovie = null;
-//				
-//				//Movie theMovie = query.getSingleResult();
-//				List results = query.getResultList();
-//				if(!results.isEmpty()) {
-//					//if query was successful, get the movie from the results
-//					theMovie = (Movie) results.get(0);
-//					System.out.println("theMovieeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee: "+theMovie);
-//					
-//				}else {
-//					System.out.println("FAilllllllllllllllllllllllllllllllleedd");
-//					//if query failed, attempt to get the movie and it's review using .get()
-//					theMovie = session.get(Movie.class, movieId);
-//					System.out.println("theMovie lazy: "+theMovie.getReviews());
-//				}
-				Movie theMovie = movieService.getMovieReviewsById(movieId);
-				theModel.addAttribute("movie",theMovie);
-				
-				
-//				session.getTransaction().commit();
-//			}finally {
-//				session.close();
-//				factory.close();
-//			}
 			System.out.println("END: viewReviews()");
 			return "list-reviews";
 		}
 		@RequestMapping("/addReview")
 		public String addReview(@RequestParam("movieId")int movieId,Model theModel) {
-			System.out.println("BEGIN: addReview()");
-			System.out.println("theModel: "+theModel);
-			System.out.println("movieId: "+movieId);
-			Review review = new Review();
-			System.out.println("new review: "+review);
-			SessionFactory factory = new Configuration()
-					.configure("hibernate.cfg.xml")//provide the config file
-					.addAnnotatedClass(Movie.class)//provide the class with the annotations on it
-					.addAnnotatedClass(Genre.class)//provide the class with the annotations on it
-					.addAnnotatedClass(Review.class)//provide the class with the annotations on it
-					.buildSessionFactory();
-			Session session = factory.getCurrentSession();
-			try {
-				session.beginTransaction();
-				Movie theMovie = session.get(Movie.class, movieId);
-				System.out.println("theMovie: "+theMovie);
-				//theMovie.addReview(review);
-				//System.out.println("theMovie:after addReview: "+theMovie);
-				//session.saveOrUpdate(theMovie);
-				WrapperReview wrapperReview = new WrapperReview(theMovie,review);
-				review.setMovie(theMovie);//set the review's movie, and set the movie's review
-				//theModel.addAttribute("movie",theMovie);
-				theModel.addAttribute("wrapperReview",wrapperReview);
-				//System.out.println("theMovie sent: "+theMovie);
-				session.getTransaction().commit();
-			}finally {
-				session.close();
-				factory.close();
-			}
-			System.out.println("review: "+review);
-			
-			//theModel.addAttribute("review",review);
-			System.out.println("theModel: "+theModel);
+			System.out.println("BEGIN: addReview()");			
+			Review theReview = new Review();
+			Movie theMovie = movieService.getMovieById(movieId);
+			theReview.setMovie(theMovie);//set movie and visa-versa
+			WrapperMovieReview wrapperMovieReview = new WrapperMovieReview(theMovie, theReview);
+			//add two objects to the model
+			theModel.addAttribute("wrapperMovieReview",wrapperMovieReview);
 			System.out.println("END: addReview()");
 			return "write-review";
 			//return "redirect:/movie/listReviews";
 		}
 
 		@PostMapping("/processReviewForm")
-		public String processReviewForm(@ModelAttribute("wrapperReview") WrapperReview wrapperReview,Model theModel) {
+		public String processReviewForm(@ModelAttribute("wrapperReview") WrapperMovieReview wrapperMovieReview,Model theModel) {
 			System.out.println("BEGIN: processReviewForm()");
-			System.out.println("++++++++WrapperReview+++++: "+wrapperReview);
-			System.out.println("++++++++WrapperReview.getReview()+++++: "+wrapperReview.getReview());
-			System.out.println("++++++++WrapperReview.getMovie()+++++: "+wrapperReview.getMovie());
-			System.out.println("theModel: "+theModel);
-			
-			//save the review to db
-			SessionFactory factory = new Configuration()
-					.configure("hibernate.cfg.xml")//provide the config file
-					.addAnnotatedClass(Movie.class)//provide the class with the annotations on it
-					.addAnnotatedClass(Genre.class)//provide the class with the annotations on it
-					.addAnnotatedClass(Review.class)//provide the class with the annotations on it
-					.buildSessionFactory();
-			Session session = factory.getCurrentSession();
-			
-			try {
-				//save review to db
-				session.beginTransaction();
-				//session.saveOrUpdate(reviewByUser);
-				//session.saveOrUpdate(theMovie);
-				//System.out.println("lazy load reviews:..."+theMovie.getReviews());
-//				Query<Review> query = session.createQuery("from Review");
-//				List<Review> reviews = query.getResultList();
-				//Movie theMovie = session.get(Movie.class, reviewByUser.getMovieId());
-				//Movie theMovie = reviewByUser.getMovie();
-				//System.out.println("theMovie: "+theMovie);
-				//theMovie.addReview(reviewByUser);
-				int movieId =wrapperReview.getMovie().getId();
-				System.out.println("movieId: "+movieId);
-				Movie theMovie = session.get(Movie.class, movieId);
-				System.out.println("theMovie: "+theMovie);
-				Review theReview = wrapperReview.getReview();
-				System.out.println("theReview: "+theReview);
-				theReview.setMovie(theMovie);
-				System.out.println("theReivew.setMovie");
-				theMovie.addReview(theReview);
-				System.out.println("lazy load reviews: "+theMovie.getReviews());//might be null?
-				//theMovie.addReview(wrapperReview.getReview());
-				//System.out.println("lazy getreviews: "+theMovie.getReviews());
-				//session.saveOrUpdate(theMovie);
-				session.saveOrUpdate(theReview);
-				//session.saveOrUpdate(theMovie);
-				
-				theModel.addAttribute("movie", theMovie);
-				
-				session.getTransaction().commit();
-				
-			}finally {
-				factory.close();
-				session.close();
-			}
-			//theModel.addAttribute("movie", the)
-			System.out.println("theModel: "+theModel);
+			//get the movie, get the review, set them on each other, do cascade save on theReview
+			System.out.println("theMOVIE: "+wrapperMovieReview.getMovie());
+			//int movieId =wrapperMovieReview.getMovie().getId();
+			Movie theMovie = wrapperMovieReview.getMovie();
+			Review theReview = wrapperMovieReview.getReview();
+			theReview.setMovie(theMovie);
+			theMovie.addReview(theReview);
+			movieService.saveMovie(theMovie);
+			//send back the movie with the reviews
+			Movie movieFetch = movieService.getMovieById(wrapperMovieReview.getMovie().getId());
+			System.out.println("lazy init reviewsssssssssssss: "+movieFetch.getReviews());
+			theModel.addAttribute("movie", movieFetch);//get the movie and all its reviews from the db
+			System.out.println("theMovie.getReviews: "+theMovie.getReviews());
 			System.out.println("END: processReviewForm()");;
 			return "list-reviews";
 		}

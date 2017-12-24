@@ -11,8 +11,11 @@
 	<h3>wrapperReview.movie.id::${wrapperReview.movie.id}</h3>
 	<h3>wrapperReview.movie.movieTitle::${wrapperReview.movie.movieTitle}</h3>
 	<hr />
-	<form:form action="processReviewForm" method="POST" modelAttribute="wrapperReview">
+	<form:form action="processReviewForm" method="POST" modelAttribute="wrapperMovieReview">
 		<form:hidden path="movie.id"/>
+		<form:hidden path="movie.movieTitle"/>
+		<form:hidden path="movie.director"/>
+		<form:hidden path="movie.genres"/>
 		<form:hidden path="review.id"/>
 		User name:<form:input path="review.personName"/>
 		<br />

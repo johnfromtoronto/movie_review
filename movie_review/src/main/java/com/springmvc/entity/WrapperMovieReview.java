@@ -2,11 +2,11 @@ package com.springmvc.entity;
 
 import java.io.Serializable;
 
-public class WrapperReview implements Serializable{
+public class WrapperMovieReview implements Serializable{
 	private Movie movie;
 	private Review review;
 	
-	public WrapperReview() {
+	public WrapperMovieReview() {
 		
 	}
 	
@@ -17,7 +17,7 @@ public class WrapperReview implements Serializable{
 	}
 
 
-	public WrapperReview(Movie movie, Review review) {
+	public WrapperMovieReview(Movie movie, Review review) {
 		super();
 		this.movie = movie;
 		this.review = review;
