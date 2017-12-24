@@ -51,21 +51,12 @@ public class MovieDAOImpl implements MovieDAO {
 	public void saveMovie(Movie theMovieByUser) {
 		System.out.println("BEGIN: DAO: public void saveMovie(Movie theMovieByUser)");
 		Session session = sessionFactory.getCurrentSession();
-//		Session session;
-//		try {
-//			System.out.println("calling .getCurrentSession");
-//		    session = sessionFactory.getCurrentSession();
-//		} catch (HibernateException e) {
-//			System.out.println("calling .openSession");
-//		    session = sessionFactory.openSession();
-//		}
-		//get the genres that user selected, 
-		List<Genre> genres = theMovieByUser.getGenres();//used for looping and checking what genres the movie has
-		List<Genre> setGenre = new ArrayList<Genre>();//used as a placeholder List to store references to genres from db
+		List<Genre> genres = theMovieByUser.getGenres();
+		List<Genre> setGenre = new ArrayList<Genre>();
 		
-		Genre horror = session.get(Genre.class, 1);//Horror reference from db
-		Genre comedy = session.get(Genre.class, 2);//Comedy reference from db
-		Genre action = session.get(Genre.class, 3);//Action reference from db
+		Genre horror = session.get(Genre.class, 1);
+		Genre comedy = session.get(Genre.class, 2);
+		Genre action = session.get(Genre.class, 3);
 		for(Genre genre : genres) {
 			String movieGenre=genre.getMovieGenre();
 			switch(movieGenre) {
@@ -86,14 +77,9 @@ public class MovieDAOImpl implements MovieDAO {
 				break;
 			}
 		}
-		System.out.println("setting the genre");
 		theMovieByUser.setGenres(setGenre);//set the genre without add new genres
-		System.out.println("lazy loading the genres from movie");
 		theMovieByUser.getGenres();//lazy load
-		System.out.println("saving the movie");
 		session.saveOrUpdate(theMovieByUser);//SAVE Or UPDATE
-		
-		System.out.println("TheMovieReviews: "+theMovieByUser.getReviews());
 		System.out.println("END: DAO: public void saveMovie(Movie theMovieByUser)");
 	}
 
@@ -101,19 +87,6 @@ public class MovieDAOImpl implements MovieDAO {
 	public void deleteMovieById(int movieId) {
 		System.out.println("BEGIN: DAO: public void deleteMovieById(int movieId)");
 		Session session = sessionFactory.getCurrentSession();
-		//		Session session;
-//		try {
-//			System.out.println("calling .getCurrentSession");
-//		    session = sessionFactory.getCurrentSession();
-//		} catch (HibernateException e) {
-//			e.printStackTrace();
-//			System.out.println("calling .openSession");
-//		    session = sessionFactory.openSession();
-//		    //session = sessionFactory.getCurrentSession();
-//		}
-//		Movie theMovie = session.get(Movie.class, movieId);
-//		session.delete(theMovie);
-		//delete all Reviews referencing the movie, then delete the movie
 		Query query = session.createQuery("delete from Review where movie_id=:movieId");
 		query.setParameter("movieId", movieId);
 		query.executeUpdate();
@@ -121,9 +94,6 @@ public class MovieDAOImpl implements MovieDAO {
 		query.setParameter("movieId", movieId);//Named parameter [movieId] not set
 		query.executeUpdate();
 
-
-		
-		//session.close();
 		System.out.println("END: DAO: public void deleteMovieById(int movieId)");
 	}
 
@@ -135,8 +105,7 @@ public class MovieDAOImpl implements MovieDAO {
 		Movie theMovie = session.get(Movie.class, movieId);
 		System.out.println("lazy init genres: "+theMovie.getGenres());
 		System.out.println("lazy init reviews: "+theMovie.getReviews());
-		//theMovie.getGenres();//lazy load these guys
-		//System.out.println(".getGenres: "+theMovie.getGenres());
+
 		System.out.println("END: DAO: public Movie getMovieById(int movieId) {");
 		return theMovie;
 		
@@ -153,15 +122,12 @@ public class MovieDAOImpl implements MovieDAO {
 		query.setParameter("theMovieId", movieId);
 		Movie theMovie = null;
 		
-		//Movie theMovie = query.getSingleResult();
-		List results = query.getResultList();//this will attempt to get the movie and all its reviews
+		List results = query.getResultList();
 		if(!results.isEmpty()) {
 			//if query was successful, get the movie from the results
 			theMovie = (Movie) results.get(0);
-			System.out.println("theMovieeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee: "+theMovie);
 			
 		}else {
-			System.out.println("FAilllllllllllllllllllllllllllllllleedd");
 			//if query failed, attempt to get the movie and it's review using .get()
 			theMovie = session.get(Movie.class, movieId);
 			System.out.println("theMovie lazy: "+theMovie.getReviews());

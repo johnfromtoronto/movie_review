@@ -22,62 +22,32 @@ public class Review {
 	private String comment;
 	@Column(name="person_name")
 	private String personName;
-//	@Column(name="date")
-//	private String date;
-//	@Column(name="rating")
-//	private int rating;
-	
 	@ManyToOne(cascade=CascadeType.ALL)
 	@JoinColumn(name="movie_id")
 	private Movie movie;
 	
-//	@Column(name="movie_id")
-//	private int movieId;
-	
 	public Review() {
 		
 	}
-
-	
-
-
-
 	public Review(String comment, String personName, Movie movie) {
 		this.comment = comment;
 		this.personName = personName;
 		this.movie = movie;
 	}
-
-
-
-
-
 	@Override
 	public String toString() {
 		return "+++Review(ToStringMethod)+++ [id=" + id + ", comment=" + comment + ", personName=" + personName + ", movie=" + "+++ReviewEnd+++]";
 	}
-
-
-
 	public Movie getMovie() {
 		return movie;
 	}
-
 	public void setMovie(Movie movie) {
 		this.movie = movie;
-		//movie.addReview(this);
 	}
 
 	public String getPersonName() {
 		return personName;
 	}
-//	public int getMovieId() {
-//		return movieId;
-//	}
-//
-//	public void setMovieId(int movieId) {
-//		this.movieId = movieId;
-//	}
 
 	public void setPersonName(String personName) {
 		this.personName = personName;
@@ -98,23 +68,4 @@ public class Review {
 		this.comment = comment;
 	}
 
-//	public String getDate() {
-//		return date;
-//	}
-//
-//	public void setDate(String date) {
-//		this.date = date;
-//	}
-
-//	public int getRating() {
-//		return rating;
-//	}
-//
-//	public void setRating(int rating) {
-//		this.rating = rating;
-//	}
-
-	
-	
-	
 }
