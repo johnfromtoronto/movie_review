@@ -104,22 +104,23 @@ public class MovieController {
 		public String updateMovie(@RequestParam("movieId")int movieId, Model theModel) {
 			System.out.println("BEGIN: public String updateMovie(@RequestParam");
 			//get the movie from the db
-			SessionFactory factory = new Configuration()
-					.configure("hibernate.cfg.xml")//provide the config file
-					.addAnnotatedClass(Movie.class)//provide the class with the annotations on it
-					.addAnnotatedClass(Genre.class)
-					.addAnnotatedClass(Review.class)
-					.buildSessionFactory();
-			Session session = factory.getCurrentSession();
+//			SessionFactory factory = new Configuration()
+//					.configure("hibernate.cfg.xml")//provide the config file
+//					.addAnnotatedClass(Movie.class)//provide the class with the annotations on it
+//					.addAnnotatedClass(Genre.class)
+//					.addAnnotatedClass(Review.class)
+//					.buildSessionFactory();
+//			Session session = factory.getCurrentSession();
 			
-			try {
-				session.beginTransaction();
-				Movie theMovie = session.get(Movie.class, movieId);
-				System.out.println("LOG: updateMovie: movieId: "+movieId);
-				System.out.println("LOG: updateMovie: theMovie: "+theMovie);
-				System.out.println("LOG: updateMovie: theMovie.getId: "+theMovie.getId());
-				System.out.println("LOG: updateMovie: theMovie.GENREDEEEE: "+theMovie.getGenres());
+//			try {
+//				session.beginTransaction();
+//				Movie theMovie = session.get(Movie.class, movieId);
+			
+				Movie theMovie = movieService.getMovieById(movieId);
+				System.out.println("m1");
 				List<Genre> movieGenres = theMovie.getGenres();
+				System.out.println("m1.2: "+movieGenres);
+				System.out.println("m2");
 				for(Genre genre:movieGenres) {
 					String movieGenre = genre.getMovieGenre();
 					switch(movieGenre) {
@@ -134,12 +135,13 @@ public class MovieController {
 					break;
 					}
 				}
+				System.out.println("m2");
 				theModel.addAttribute("movie",theMovie);
-				session.getTransaction().commit();
-			}finally {
-				session.close();
-				factory.close();
-			}
+//				session.getTransaction().commit();
+//			}finally {
+//				session.close();
+//				factory.close();
+//			}
 			System.out.println("END: public String updateMovie(@RequestParam");
 			return "add-movie-form";
 		}
@@ -186,15 +188,15 @@ public class MovieController {
 		@RequestMapping("/viewReviews")
 		public String viewReviews(@RequestParam("movieId")int movieId, Model theModel) {
 			System.out.println("BEGIN: viewReviews()");
-			SessionFactory factory = new Configuration()
-					.configure("hibernate.cfg.xml")
-					.addAnnotatedClass(Movie.class)
-					.addAnnotatedClass(Genre.class)
-					.addAnnotatedClass(Review.class)
-					.buildSessionFactory();
-			Session session = factory.getCurrentSession();
-			try {
-				session.beginTransaction();
+//			SessionFactory factory = new Configuration()
+//					.configure("hibernate.cfg.xml")
+//					.addAnnotatedClass(Movie.class)
+//					.addAnnotatedClass(Genre.class)
+//					.addAnnotatedClass(Review.class)
+//					.buildSessionFactory();
+//			Session session = factory.getCurrentSession();
+//			try {
+//				session.beginTransaction();
 				//get the reviews for the given movie
 				//Query<Review> query = session.createQuery("from Review where movie_id="+movieId);
 				//List<Review> reviews = query.getResultList();
@@ -202,37 +204,40 @@ public class MovieController {
 				//theModel.addAttribute("reviews",reviews);
 				
 				//stuff
-				System.out.println("error: "+movieId);
+//				System.out.println("error: "+movieId);
 				//Movie theMovie = session.get(Movie.class, movieId);
 				//System.out.println("error: "+movieId);
 				//System.out.println("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHH : theMovie: "+theMovie);
-				//System.out.println("the movie reviews: "+theMovie.getReviews());//lazy get
-				Query<Movie> query = session.createQuery("select i from Movie i "
-						+ "JOIN FETCH i.reviews "
-						+ "where i.id=:theMovieId",
-						Movie.class);
-				query.setParameter("theMovieId", movieId);
-				Movie theMovie = null;
-				
-				//Movie theMovie = query.getSingleResult();
-				List results = query.getResultList();
-				if(!results.isEmpty()) {
-					theMovie = (Movie) results.get(0);
-					System.out.println("theMovieeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee: "+theMovie);
-					
-				}else {
-					System.out.println("FAilllllllllllllllllllllllllllllllleedd");
-					theMovie = session.get(Movie.class, movieId);
-					System.out.println("theMovie lazy: "+theMovie.getReviews());
-				}
+//				//System.out.println("the movie reviews: "+theMovie.getReviews());//lazy get
+//				Query<Movie> query = session.createQuery("select i from Movie i "
+//						+ "JOIN FETCH i.reviews "
+//						+ "where i.id=:theMovieId",
+//						Movie.class);
+//				query.setParameter("theMovieId", movieId);
+//				Movie theMovie = null;
+//				
+//				//Movie theMovie = query.getSingleResult();
+//				List results = query.getResultList();
+//				if(!results.isEmpty()) {
+//					//if query was successful, get the movie from the results
+//					theMovie = (Movie) results.get(0);
+//					System.out.println("theMovieeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee: "+theMovie);
+//					
+//				}else {
+//					System.out.println("FAilllllllllllllllllllllllllllllllleedd");
+//					//if query failed, attempt to get the movie and it's review using .get()
+//					theMovie = session.get(Movie.class, movieId);
+//					System.out.println("theMovie lazy: "+theMovie.getReviews());
+//				}
+				Movie theMovie = movieService.getMovieReviewsById(movieId);
 				theModel.addAttribute("movie",theMovie);
 				
 				
-				session.getTransaction().commit();
-			}finally {
-				session.close();
-				factory.close();
-			}
+//				session.getTransaction().commit();
+//			}finally {
+//				session.close();
+//				factory.close();
+//			}
 			System.out.println("END: viewReviews()");
 			return "list-reviews";
 		}

@@ -5,9 +5,13 @@ import java.util.List;
 import com.springmvc.entity.Movie;
 
 public interface MovieDAO {
-	List<Movie> getMovies();
+	public List<Movie> getMovies();
 
-	void saveMovie(Movie theMovieByUser);
+	public void saveMovie(Movie theMovieByUser);
 
-	void deleteMovieById(int movieId);
+	public void deleteMovieById(int movieId);
+
+	public Movie getMovieById(int movieId);
+
+	public Movie getMovieReviewsById(int movieId);
 }

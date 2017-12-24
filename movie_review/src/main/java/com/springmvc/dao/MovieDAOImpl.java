@@ -121,4 +121,45 @@ public class MovieDAOImpl implements MovieDAO {
 		System.out.println("END: DAO: public void deleteMovieById(int movieId)");
 	}
 
+	@Override
+	public Movie getMovieById(int movieId) {
+		System.out.println("BEGIN: DAO: public Movie getMovieById(int movieId) {");
+		Session session = sessionFactory.getCurrentSession();
+		
+		Movie theMovie = session.get(Movie.class, movieId);
+		System.out.println("Movie: "+theMovie);
+		//theMovie.getGenres();//lazy load these guys
+		//System.out.println(".getGenres: "+theMovie.getGenres());
+		System.out.println("END: DAO: public Movie getMovieById(int movieId) {");
+		return theMovie;
+		
+	}
+
+	@Override
+	public Movie getMovieReviewsById(int movieId) {
+		Session session = sessionFactory.getCurrentSession();
+		
+		Query<Movie> query = session.createQuery("select i from Movie i "
+				+ "JOIN FETCH i.reviews "
+				+ "where i.id=:theMovieId",
+				Movie.class);
+		query.setParameter("theMovieId", movieId);
+		Movie theMovie = null;
+		
+		//Movie theMovie = query.getSingleResult();
+		List results = query.getResultList();//this will attempt to get the movie and all its reviews
+		if(!results.isEmpty()) {
+			//if query was successful, get the movie from the results
+			theMovie = (Movie) results.get(0);
+			System.out.println("theMovieeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee: "+theMovie);
+			
+		}else {
+			System.out.println("FAilllllllllllllllllllllllllllllllleedd");
+			//if query failed, attempt to get the movie and it's review using .get()
+			theMovie = session.get(Movie.class, movieId);
+			System.out.println("theMovie lazy: "+theMovie.getReviews());
+		}
+		return theMovie;
+	}
+
 }

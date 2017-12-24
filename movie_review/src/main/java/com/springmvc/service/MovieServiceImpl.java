@@ -41,4 +41,19 @@ public class MovieServiceImpl implements MovieService {
 		System.out.println("END: SERVICE: public void deleteMovieById(int movieId) ");
 	}
 
+	@Override
+	@Transactional
+	public Movie getMovieById(int movieId) {
+		System.out.println("BEGIN: SERVICE: public Movie getMovieById(int movieId) {");
+		Movie theMovie = movieDAO.getMovieById(movieId);
+		System.out.println("END: SERVICE: public Movie getMovieById(int movieId) {");
+		return theMovie;
+	}
+
+	@Override
+	@Transactional
+	public Movie getMovieReviewsById(int movieId) {
+		return movieDAO.getMovieReviewsById(movieId);
+	}
+
 }
