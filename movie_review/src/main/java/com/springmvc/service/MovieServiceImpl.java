@@ -10,12 +10,22 @@ import org.springframework.transaction.annotation.Transactional;
 import com.springmvc.dao.MovieDAO;
 import com.springmvc.entity.Movie;
 
+/**
+ * Service that delegates all CRUD operations to DAO
+ * 
+ * @author John
+ *
+ */
 @Service
 public class MovieServiceImpl implements MovieService {
 	
 	@Autowired
 	private MovieDAO movieDAO;
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.springmvc.service.MovieService#getMovies()
+	 */
 	@Override
 	@Transactional
 	public List<Movie> getMovies() {
